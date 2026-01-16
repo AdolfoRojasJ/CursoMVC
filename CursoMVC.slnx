@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/Elementos de la solución/">
     <File Path="README.md" />
+    <File Path="SQL_scripts.txt" />
   </Folder>
   <Project Path="CapaDatos/CapaDatos.csproj" Id="e1a8fceb-5a67-41e9-bb57-2381dada9c75" />
   <Project Path="CapaEntidad/CapaEntidad.csproj" Id="b16eeb56-6b48-4248-bae5-eb6c746f469f" />

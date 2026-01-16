@@ -1,0 +1,208 @@
+VIDEO 1
+CREATE DATABASE DBCARRITO;
+USE DBCARRITO;
+
+CREATE TABLE CATEGORIA(
+    IdCategoria INT PRIMARY KEY AUTO_INCREMENT,
+    Descripcion VARCHAR(100),
+    Activo BIT DEFAULT 1,
+    FechaRegistro DATETIME DEFAULT NOW()
+);
+
+CREATE TABLE MARCA(
+    IdMarca INT PRIMARY KEY AUTO_INCREMENT,
+    Descripcion VARCHAR(100),
+    Activo BIT DEFAULT 1,
+    FechaRegistro DATETIME DEFAULT NOW()
+);
+
+CREATE TABLE CLIENTE(
+    IdCliente INT PRIMARY KEY AUTO_INCREMENT,
+    Nombres VARCHAR(100),
+    Apellidos VARCHAR(100),
+    Correo VARCHAR(100),
+    Clave VARCHAR(150),
+    Restablecer BIT DEFAULT 0,
+    FechaRegistro DATETIME DEFAULT NOW()
+);
+
+CREATE TABLE USUARIO(
+    IdUsuario INT PRIMARY KEY AUTO_INCREMENT,
+    Nombres VARCHAR(100),
+    Apellidos VARCHAR(100),
+    Correo VARCHAR(100),
+    Clave VARCHAR(150),
+    Restablecer BIT DEFAULT 1,
+    Activo BIT DEFAULT 1,
+    FechaRegistro DATETIME DEFAULT NOW()
+);
+
+CREATE TABLE DEPARTAMENTO (
+    IdDepartamento VARCHAR(2)
+    Descripcion VARCHAR(45),  
+);
+
+CREATE TABLE PROVINCIA (
+    IdProvincia VARCHAR(4),
+    Descripcion VARCHAR(45),
+    IdDepartamento VARCHAR(2)
+);
+
+CREATE TABLE DISTRITO (
+    IdDistrito VARCHAR(6),
+    Descripcion VARCHAR(45),
+    IdProvincia VARCHAR(4),
+    IdDepartamento VARCHAR(2)
+);
+
+
+CREATE TABLE PRODUCTO(
+    IdProducto INT PRIMARY KEY AUTO_INCREMENT,
+    Nombre VARCHAR(500),
+    Descripcion VARCHAR(500),
+    IdMarca INT,
+    IdCategoria INT,
+    Precio DECIMAL(10,2) DEFAULT 0,
+    Stock INT,
+    RutaImagen VARCHAR(100),
+    NombreImagen VARCHAR(100),
+    Activo BIT DEFAULT 1,
+    FechaRegistro DATETIME DEFAULT NOW(),
+    FOREIGN KEY (IdMarca) REFERENCES MARCA(IdMarca),
+    FOREIGN KEY (IdCategoria) REFERENCES CATEGORIA(IdCategoria)
+);
+
+CREATE TABLE CARRITO(
+    IdCarrito INT PRIMARY KEY AUTO_INCREMENT,
+    IdCliente INT,
+    IdProducto INT,
+    Cantidad INT,
+    FOREIGN KEY (IdCliente) REFERENCES CLIENTE(IdCliente),
+    FOREIGN KEY (IdProducto) REFERENCES PRODUCTO(IdProducto)
+);
+
+CREATE TABLE VENTA(
+    IdVenta INT PRIMARY KEY AUTO_INCREMENT,
+    IdCliente INT,
+    TotalProducto INT,
+    MontoTotal DECIMAL(10,2),
+    Contacto VARCHAR(50),
+    IdDistrito VARCHAR(10),
+    Telefono VARCHAR(50),
+    Direccion VARCHAR (500),
+    IdTransaccion VARCHAR (50),
+    FechaVenta DATETIME DEFAULT NOW(),
+    FOREIGN KEY (IdCliente) REFERENCES CLIENTE(IdCliente)
+);
+
+CREATE TABLE DETALLE_VENTA(
+    IdDetalleVenta INT PRIMARY KEY AUTO_INCREMENT,
+    IdVenta INT,
+    IdProducto INT,
+    Cantidad INT,
+    Total DECIMAL(10,2),
+    FOREIGN KEY (IdVenta) REFERENCES VENTA(IdVenta),
+    FOREIGN KEY (IdProducto) REFERENCES PRODUCTO(IdProducto)  
+);
+
+VIDEO 2
+SELECT  * FROM USUARIO; 
+INSERT INTO USUARIO(Nombres, Apellidos, Correo, Clave) 
+VALUES ('Adolfo', 'Rojas', 'adolfor202020@gmail.com', '08adecf8159077b7ebf728a48e64d4a4945854c144960214d4b4867ea875b620');
+
+SELECT  * FROM CATEGORIA; 
+INSERT INTO CATEGORIA(Descripcion)
+VALUES ('Tecnología'),
+       ('Muebles'),
+       ('Dormitorio'),
+       ('Deportes');
+
+SELECT  * FROM MARCA; 
+INSERT INTO MARCA(Descripcion)
+VALUES ('SONY'),
+       ('HP'),
+       ('LG'),
+       ('HYUNDAI'),
+       ('CANON');
+
+SELECT * FROM DEPARTAMENTO;
+INSERT INTO DEPARTAMENTO(IdDepartamento,Descripcion)
+VALUES ('01', 'PARICUTIN 37');
+
+SELECT * FROM PROVINCIA;
+INSERT INTO PROVINCIA(IdProvincia,Descripcion,IdDepartamento)
+VALUES ('0101', 'Estado de México', '01');
+
+SELECT * FROM DISTRITO;
+INSERT INTO DISTRITO(IdDistrito,Descripcion,IdProvincia,IdDepartamento)
+VALUES ('010101', 'Nezahualcoyotl', '0101', '01');
+
+VIDEO 10
+USE DBCARRITO;
+SELECT * FROM USUARIO;
+DELIMITER //
+
+CREATE PROCEDURE sp_RegistrarUsuario(
+    IN _Nombres VARCHAR(100),
+    IN _Apellidos VARCHAR(100),
+    IN _Correo VARCHAR(100),
+    IN _Clave VARCHAR(100),
+    IN _Activo BOOLEAN,
+    OUT _Mensaje VARCHAR(500),
+    OUT _Resultado BOOLEAN
+)
+BEGIN
+    SET _Resultado = 0;
+    SET _Mensaje = '';
+
+    IF NOT EXISTS (SELECT * FROM USUARIO WHERE Correo = _Correo) THEN
+        INSERT INTO USUARIO(Nombres, Apellidos, Correo, Clave, Activo) 
+        VALUES (_Nombres, _Apellidos, _Correo, _Clave, _Activo);
+        
+        SET _Resultado = LAST_INSERT_ID();
+    ELSE
+        SET _Mensaje = 'El correo del usuario ya existe';
+    END IF;
+END //
+
+DELIMITER ;
+
+DELIMITER //
+
+CREATE PROCEDURE sp_EditarUsuario(
+    IN _IdUsuario INT,
+    IN _Nombres VARCHAR(100),
+    IN _Apellidos VARCHAR(100),
+    IN _Correo VARCHAR(100),
+    IN _Activo BOOLEAN,
+    OUT _Mensaje VARCHAR(500),
+    OUT _Resultado BOOLEAN
+)
+BEGIN
+    SET _Resultado = 0;
+    SET _Mensaje = '';
+
+    -- Validamos que el correo no pertenezca a OTRO usuario
+    IF NOT EXISTS (SELECT * FROM USUARIO WHERE Correo = _Correo AND IdUsuario != _IdUsuario) THEN
+        UPDATE USUARIO SET
+            Nombres = _Nombres,
+            Apellidos = _Apellidos,
+            Correo = _Correo,
+            Activo = _Activo
+        WHERE IdUsuario = _IdUsuario;
+        
+        SET _Resultado = 1;
+    ELSE
+        SET _Mensaje = 'El correo del usuario ya existe';
+    END IF;
+END //
+
+DELIMITER ;
+
+
+
+
+
+
+
+
