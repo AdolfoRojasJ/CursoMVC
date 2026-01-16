@@ -79,7 +79,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn btn-primary" onlcick="Guardar()">Guardar</button>
+                <button type="button" class="btn btn-primary" onclick="Guardar()">Guardar</button>
             </div>
         </div>
     </div>
@@ -87,6 +87,7 @@
 @section scripts{
     <script>
         var tabladata;
+        var filaSeleccionada;
         
         tabladata = $("#tabla").DataTable({
             responsive: true,
@@ -104,7 +105,7 @@
                     "data": "Activo", "render": function (valor) {
                         if (valor)
                         {
-                           return '<span class="badge bg-success">SI</span>'                      }
+                           return '<span class="badge bg-success">SI</span>'}
                         else
                         {
                            return '<span class="badge bg-danger">NO</span>'
@@ -148,18 +149,21 @@
 
         })
 
-        function Guardar(json) {
+        function Guardar() {
             var Usuario = {
-                Activo: $("#cboactivo").val();
+                Activo: $("#cboactivo").val() == 1 ? true : false,
                 Apellidos: $("#txtapellidos").val(),
                 Correo: $("#txtcorreo").val(),
-                IdUsuario = $("#txtid").val(),
-                Nombres: $("#txtnombres").val(),
-            };
+                IdUsuario: $("#txtid").val(),
+                Nombres: $("#txtnombres").val()
+            }
+            if (Usuario.IdUsuario == 0) {
+                tabladata.row.add(Usuario).draw(false);
+            } else {
+                tabladata.row(filaSeleccionada).data(Usuario).draw(false);            
+            }
+            $("#FormModal").modal("hide");
         }
-
-        $("#tabla tbody").on("click", '.btn-borrar', function () {
-            alert("Borrar")
-        })
+    
     </script>
 }

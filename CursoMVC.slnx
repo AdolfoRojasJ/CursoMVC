@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/Elementos de la solución/">
+    <File Path="README.md" />
+  </Folder>
   <Project Path="CapaDatos/CapaDatos.csproj" Id="e1a8fceb-5a67-41e9-bb57-2381dada9c75" />
   <Project Path="CapaEntidad/CapaEntidad.csproj" Id="b16eeb56-6b48-4248-bae5-eb6c746f469f" />
   <Project Path="CapaNegocio/CapaNegocio.csproj" Id="519f989c-e616-4f8d-b6a4-bfdd1558d6c7" />
