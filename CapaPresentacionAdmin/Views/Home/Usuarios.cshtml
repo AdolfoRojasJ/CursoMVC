@@ -47,24 +47,24 @@
                 <h1 class="modal-title fs-5" id="exampleModalLabel">Usuario</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body g-2">
+            <div class="modal-body">
 
-                <input id="txtid" type="hidden" value="0"/>
-                <div class="row">
+                <input id="txtid" type="hidden" value="0" />
+                <div class="row g-2">
 
                     <div class="col-sm-6">
                         <label for="txtnombres" class="form-label">Nombres</label>
-                        <input type="text" class="form-control" id="txtnombres">
+                        <input type="text" class="form-control" id="txtnombres" autocomplete="off">
                     </div>
 
                     <div class="col-sm-6">
                         <label for="txtapellidos" class="form-label">Apellidos</label>
-                        <input type="text" class="form-control" id="txtapellidos">
+                        <input type="text" class="form-control" id="txtapellidos" autocomplete="off">
                     </div>
 
                     <div class="col-sm-6">
                         <label for="txtcoreo" class="form-label">Correo</label>
-                        <input type="text" class="form-control" id="txtcorreo">
+                        <input type="text" class="form-control" id="txtcorreo" autocomplete="off">
                     </div>
 
                     <div class="col-sm-6">
@@ -72,9 +72,17 @@
                         <select class="form-select" id="cboactivo">
                             <option value="1">SI</option>
                             <option value="0">NO</option>
-                        </select>                    
+                        </select>
                     </div>
-                    
+
+                </div>
+
+                <div class="row mt-2">
+                    <div class="col-12">
+                        <div id="mensajeError" class="alert alert-danger" role="alert">
+                            Alert!
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -131,6 +139,8 @@
             $("#txtcorreo").val("")
             $("#cboactivo").val(1)
 
+            $("#mensajeError").hide();
+
             if (json != null) {
                 $("#txtid").val(json.IdUsuario);
                 $("#txtnombres").val(json.Nombres)
@@ -157,12 +167,44 @@
                 IdUsuario: $("#txtid").val(),
                 Nombres: $("#txtnombres").val()
             }
-            if (Usuario.IdUsuario == 0) {
-                tabladata.row.add(Usuario).draw(false);
-            } else {
-                tabladata.row(filaSeleccionada).data(Usuario).draw(false);            
-            }
-            $("#FormModal").modal("hide");
+            jQuery.ajax({
+                url: '@Url.Action("GuardarUsuario", "Home")',
+                type: "POST",
+                data: JSON.stringify({ objeto: Usuario }),
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    debugger;
+                    if (Usuario.IdUsuario == 0) {
+                        if (data.resultado != 0) {
+                            Usuario.IdUsuario = data.resultado;
+                            tabledata.row.add(Usuario).draw(false);
+                            $("#FormModal").modal("hide");
+                        } else {
+                            $("#mensajeError").text(data.mensaje);
+                            $("#mensajeError").show();
+                        }
+                    }
+                    else {
+                        if (data.resultado) {
+                            tabladata.row(filaSeleccionada).data(Usuario).draw(false);
+                            filaSeleccionada = null;
+                            $("#FormModal").modal("hide");
+                        }
+                        else {
+                            $("#mensajeError").text(data.mensaje);
+                            $("#mensajeError").show();
+                        }
+                        tabladata.row(filaSeleccionada).data(Usuario).draw(false);
+                    }
+                },
+                error: function (error) {
+                    console.log(error)
+                },
+                beforeSend: function () {
+                },
+            });
+            
         }
     
     </script>

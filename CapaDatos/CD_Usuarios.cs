@@ -60,21 +60,21 @@ namespace CapaDatos
                 using (MySqlConnection oconexion = new MySqlConnection(Conexion.cn))
                 {
                     MySqlCommand cmd = new MySqlCommand("sp_RegistrarUsuario", oconexion);
-                    cmd.Parameters.AddWithValue("Nombres", obj.Nombres);
-                    cmd.Parameters.AddWithValue("Apellidos", obj.Apellidos);
-                    cmd.Parameters.AddWithValue("Correo", obj.Correo);
-                    cmd.Parameters.AddWithValue("Clave", obj.Clave);
-                    cmd.Parameters.AddWithValue("Activo", obj.Activo);
-                    cmd.Parameters.Add("Resultado", MySqlDbType.UInt64).Direction = ParameterDirection.Output;
-                    cmd.Parameters.Add("Mensaje", MySqlDbType.VarChar, 500).Direction = ParameterDirection.Output;
+                    cmd.Parameters.AddWithValue("_Nombres", obj.Nombres);
+                    cmd.Parameters.AddWithValue("_Apellidos", obj.Apellidos);
+                    cmd.Parameters.AddWithValue("_Correo", obj.Correo);
+                    cmd.Parameters.AddWithValue("_Clave", obj.Clave);
+                    cmd.Parameters.AddWithValue("_Activo", obj.Activo);
+                    cmd.Parameters.Add("_Resultado", MySqlDbType.Int32).Direction = ParameterDirection.Output;
+                    cmd.Parameters.Add("_Mensaje", MySqlDbType.VarChar, 500).Direction = ParameterDirection.Output;
                     cmd.CommandType = CommandType.StoredProcedure;
 
                     oconexion.Open();
 
                     cmd.ExecuteNonQuery();
 
-                    idautogenerado = Convert.ToInt32(cmd.Parameters["Resultado"].Value);
-                    Mensaje = cmd.Parameters["Mensaje"].Value.ToString();
+                    idautogenerado = Convert.ToInt32(cmd.Parameters["_Resultado"].Value);
+                    Mensaje = cmd.Parameters["_Mensaje"].Value.ToString();
                 }
             }
             catch (Exception ex)
@@ -94,21 +94,21 @@ namespace CapaDatos
                 using (MySqlConnection oconexion = new MySqlConnection(Conexion.cn))
                 {
                     MySqlCommand cmd = new MySqlCommand("sp_EditarUsuario", oconexion);
-                    cmd.Parameters.AddWithValue("IdUsuario", obj.IdUsuario);
-                    cmd.Parameters.AddWithValue("Nombres", obj.Nombres);
-                    cmd.Parameters.AddWithValue("Apellidos", obj.Apellidos);
-                    cmd.Parameters.AddWithValue("Correo", obj.Correo);
-                    cmd.Parameters.AddWithValue("Activo", obj.Activo);
-                    cmd.Parameters.Add("Resultado", MySqlDbType.Bit).Direction = ParameterDirection.Output;
-                    cmd.Parameters.Add("Mensaje", MySqlDbType.VarChar, 500).Direction = ParameterDirection.Output;
+                    cmd.Parameters.AddWithValue("_IdUsuario", obj.IdUsuario);
+                    cmd.Parameters.AddWithValue("_Nombres", obj.Nombres);
+                    cmd.Parameters.AddWithValue("_Apellidos", obj.Apellidos);
+                    cmd.Parameters.AddWithValue("_Correo", obj.Correo);
+                    cmd.Parameters.AddWithValue("_Activo", obj.Activo);
+                    cmd.Parameters.Add("_Resultado", MySqlDbType.Int32).Direction = ParameterDirection.Output;
+                    cmd.Parameters.Add("_Mensaje", MySqlDbType.VarChar, 500).Direction = ParameterDirection.Output;
                     cmd.CommandType = CommandType.StoredProcedure;
 
                     oconexion.Open();
 
                     cmd.ExecuteNonQuery();
 
-                    resultado = Convert.ToBoolean(cmd.Parameters["Resultado"].Value);
-                    Mensaje = cmd.Parameters["Mensaje"].Value.ToString();
+                    resultado = Convert.ToBoolean(cmd.Parameters["_Resultado"].Value);
+                    Mensaje = cmd.Parameters["_Mensaje"].Value.ToString();
                 }
             }
             catch (Exception ex)

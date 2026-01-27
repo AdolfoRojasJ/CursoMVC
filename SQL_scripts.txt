@@ -139,9 +139,12 @@ VALUES ('010101', 'Nezahualcoyotl', '0101', '01');
 
 VIDEO 10
 USE DBCARRITO;
-SELECT * FROM USUARIO;
-DELIMITER //
 
+-- Eliminamos versiones anteriores
+DROP PROCEDURE IF EXISTS sp_RegistrarUsuario;
+DROP PROCEDURE IF EXISTS sp_EditarUsuario;
+
+-- Procedimiento: Registrar
 CREATE PROCEDURE sp_RegistrarUsuario(
     IN _Nombres VARCHAR(100),
     IN _Apellidos VARCHAR(100),
@@ -149,13 +152,13 @@ CREATE PROCEDURE sp_RegistrarUsuario(
     IN _Clave VARCHAR(100),
     IN _Activo BOOLEAN,
     OUT _Mensaje VARCHAR(500),
-    OUT _Resultado BOOLEAN
+    OUT _Resultado INT
 )
 BEGIN
     SET _Resultado = 0;
     SET _Mensaje = '';
 
-    IF NOT EXISTS (SELECT * FROM USUARIO WHERE Correo = _Correo) THEN
+    IF NOT EXISTS (SELECT 1 FROM USUARIO WHERE Correo = _Correo) THEN
         INSERT INTO USUARIO(Nombres, Apellidos, Correo, Clave, Activo) 
         VALUES (_Nombres, _Apellidos, _Correo, _Clave, _Activo);
         
@@ -163,12 +166,9 @@ BEGIN
     ELSE
         SET _Mensaje = 'El correo del usuario ya existe';
     END IF;
-END //
+END;
 
-DELIMITER ;
-
-DELIMITER //
-
+-- Procedimiento: Editar
 CREATE PROCEDURE sp_EditarUsuario(
     IN _IdUsuario INT,
     IN _Nombres VARCHAR(100),
@@ -176,14 +176,13 @@ CREATE PROCEDURE sp_EditarUsuario(
     IN _Correo VARCHAR(100),
     IN _Activo BOOLEAN,
     OUT _Mensaje VARCHAR(500),
-    OUT _Resultado BOOLEAN
+    OUT _Resultado INT
 )
 BEGIN
     SET _Resultado = 0;
     SET _Mensaje = '';
 
-    -- Validamos que el correo no pertenezca a OTRO usuario
-    IF NOT EXISTS (SELECT * FROM USUARIO WHERE Correo = _Correo AND IdUsuario != _IdUsuario) THEN
+    IF NOT EXISTS (SELECT 1 FROM USUARIO WHERE Correo = _Correo AND IdUsuario != _IdUsuario) THEN
         UPDATE USUARIO SET
             Nombres = _Nombres,
             Apellidos = _Apellidos,
@@ -195,9 +194,7 @@ BEGIN
     ELSE
         SET _Mensaje = 'El correo del usuario ya existe';
     END IF;
-END //
-
-DELIMITER ;
+END;
 
 
 
